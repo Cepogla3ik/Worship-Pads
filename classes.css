@@ -1,0 +1,28 @@
+@keyframes launchPadPlays {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.launch-pad-playing {
+  background: linear-gradient(120deg,
+    hsl(155 75% 35%),
+    hsl(185 85% 45%),
+    hsl(215 95% 55%)
+  );
+  background-size: 200% 200%;
+  color: hsl(180 60% 15%) !important;
+  animation: launchPadPlays 8s ease-in-out infinite;
+}
+
+.slime-pressing {
+  animation: slimePress 0.3s ease;
+}
+@keyframes slimePress {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.975, 0.9875); }
+  70%  { transform: scale(1.0125, 0.9875); }
+  100% { transform: scale(1); }
+}
+.launch-pad-playing.slime-pressing {
+  animation: launchPadPlays 8s ease-in-out infinite, slimePress 0.3s ease;
+}
