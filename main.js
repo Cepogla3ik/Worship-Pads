@@ -17,7 +17,6 @@ const warmPadPitchesArray = [
 
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Превращаем NodeList в массив, чтобы использовать map
 const padsState = Array.from(launchPadElements).map(() => ({
   source: null,
   gainNode: null,
@@ -38,15 +37,15 @@ async function playPad(padIndex) {
   source.loop = true;
 
   const gainNode = ctx.createGain();
-  gainNode.gain.setValueAtTime(0, ctx.currentTime); // старт с тишины
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
   source.connect(gainNode).connect(ctx.destination);
 
   if (warmPadPitchesArray[padIndex].includes('sharp')) {
-    source.detune.value = 100; // +100 центов = полутон выше
+    source.detune.value = 100;
   }
 
   source.start(0);
-  gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.5); // fade in 0.5 сек
+  gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 2);
 
   padState.source = source;
   padState.gainNode = gainNode;
@@ -58,7 +57,7 @@ function stopPad(padIndex) {
   if (!padState.isPlaying || !padState.source) return;
 
   padState.gainNode.gain.setValueAtTime(padState.gainNode.gain.value, ctx.currentTime);
-  padState.gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5); // fade out 0.5 сек
+  padState.gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.5);
 
   setTimeout(() => {
     if (padState.source) {
@@ -72,7 +71,6 @@ function stopPad(padIndex) {
   }, 500);
 }
 
-// Назначаем клики на каждый pad
 launchPadElements.forEach((launchPad, padIndex) => {
   launchPad.addEventListener('click', () => {
     const padState = padsState[padIndex];
@@ -86,7 +84,6 @@ launchPadElements.forEach((launchPad, padIndex) => {
   });
 });
 
-// Контроль общей громкости
 const volumeSetUpElement = document.querySelector('#volume-set-up');
 const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
