@@ -1,81 +1,98 @@
-const launchPadsContainerElement = document.querySelector('#launch-pads-container');
 const launchPadElements = document.querySelectorAll('button');
 
-launchPadElements.forEach((launchPad, padIndex) => {
-  const warmPadPitchesArray = [
-    'C-WarmChurchfrontPads',
-    'Csharp-WarmChurchfrontPads',
-    'D-WarmChurchfrontPads',
-    'Dsharp-WarmChurchfrontPads',
-    'E-WarmChurchfrontPads',
-    'F-WarmChurchfrontPads',
-    'Fsharp-WarmChurchfrontPads',
-    'G-WarmChurchfrontPads',
-    'Gsharp-WarmChurchfrontPads',
-    'A-WarmChurchfrontPads',
-    'Asharp-WarmChurchfrontPads',
-    'B-WarmChurchfrontPads'
-  ];
+const warmPadPitchesArray = [
+  'C-WarmChurchfrontPads',
+  'Csharp-WarmChurchfrontPads',
+  'D-WarmChurchfrontPads',
+  'Dsharp-WarmChurchfrontPads',
+  'E-WarmChurchfrontPads',
+  'F-WarmChurchfrontPads',
+  'Fsharp-WarmChurchfrontPads',
+  'G-WarmChurchfrontPads',
+  'Gsharp-WarmChurchfrontPads',
+  'A-WarmChurchfrontPads',
+  'Asharp-WarmChurchfrontPads',
+  'B-WarmChurchfrontPads'
+];
 
-  function fadeOut(audio, duration = 500) {
-    const step = 50;
-    const volumeStep = audio.volume / (duration / step);
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    const fade = setInterval(() => {
-      if (audio.volume - volumeStep > 0) {
-        audio.volume -= volumeStep;
-      } else {
-        audio.volume = 0;
-        audio.pause();
-        audio.currentTime = 0;
-        clearInterval(fade);
-        audio.volume = 1;
-      }
-    }, step);
+// Превращаем NodeList в массив, чтобы использовать map
+const padsState = Array.from(launchPadElements).map(() => ({
+  source: null,
+  gainNode: null,
+  isPlaying: false
+}));
+
+async function playPad(padIndex) {
+  const padState = padsState[padIndex];
+  if (padState.isPlaying) return;
+
+  const padName = warmPadPitchesArray[padIndex].replace('sharp', '');
+  const response = await fetch(`${padName}.mp3`);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+
+  const source = ctx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.loop = true;
+
+  const gainNode = ctx.createGain();
+  gainNode.gain.setValueAtTime(0, ctx.currentTime); // старт с тишины
+  source.connect(gainNode).connect(ctx.destination);
+
+  if (warmPadPitchesArray[padIndex].includes('sharp')) {
+    source.detune.value = 100; // +100 центов = полутон выше
   }
-  let isPlaying = null;
-  let pad;
 
-  launchPad.onclick = () => {
-    if (!isPlaying && !warmPadPitchesArray[padIndex].includes('sharp')) {
-      pad = new Audio(`${warmPadPitchesArray[padIndex]}.mp3`);
-      launchPad.classList.add('launch-pad-playing');
-      launchPad.classList.add('slime-pressing');
-      pad.currentTime = 0;
-      pad.play();
-      isPlaying = true;
-    } else if (!isPlaying && warmPadPitchesArray[padIndex].includes('sharp')) {
-      const audioCtx = new AudioContext();
-      const url = `${warmPadPitchesArray[padIndex].replace('sharp', '')}.mp3`;
+  source.start(0);
+  gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.5); // fade in 0.5 сек
 
-      fetch(url)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
-        .then(audioBuffer => {
-          const source = audioCtx.createBufferSource();
-          source.buffer = audioBuffer;
-          source.detune.value = 100;
-          source.connect(audioCtx.destination);
-          source.start();
+  padState.source = source;
+  padState.gainNode = gainNode;
+  padState.isPlaying = true;
+}
 
-          pad = source;
-        });
+function stopPad(padIndex) {
+  const padState = padsState[padIndex];
+  if (!padState.isPlaying || !padState.source) return;
 
-      launchPad.classList.add('launch-pad-playing');
-      launchPad.classList.add('slime-pressing');
-      isPlaying = true;
-    } else {
-      launchPad.classList.remove('launch-pad-playing');
-      launchPad.classList.remove('slime-pressing');
-      fadeOut(pad, 3000);
-      isPlaying = false;
+  padState.gainNode.gain.setValueAtTime(padState.gainNode.gain.value, ctx.currentTime);
+  padState.gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5); // fade out 0.5 сек
+
+  setTimeout(() => {
+    if (padState.source) {
+      padState.source.stop();
+      padState.source.disconnect();
+      padState.gainNode.disconnect();
+      padState.source = null;
+      padState.gainNode = null;
+      padState.isPlaying = false;
     }
-  }
+  }, 500);
+}
+
+// Назначаем клики на каждый pad
+launchPadElements.forEach((launchPad, padIndex) => {
+  launchPad.addEventListener('click', () => {
+    const padState = padsState[padIndex];
+    if (!padState.isPlaying) {
+      launchPad.classList.add('launch-pad-playing', 'slime-pressing');
+      playPad(padIndex);
+    } else {
+      launchPad.classList.remove('launch-pad-playing', 'slime-pressing');
+      stopPad(padIndex);
+    }
+  });
 });
 
-
+// Контроль общей громкости
 const volumeSetUpElement = document.querySelector('#volume-set-up');
 const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
-  volumeValueElement.innerHTML = volumeSetUpElement.value;
+  const vol = parseFloat(volumeSetUpElement.value);
+  volumeValueElement.innerHTML = vol;
+  padsState.forEach(pad => {
+    if (pad.gainNode) pad.gainNode.gain.setValueAtTime(vol, ctx.currentTime);
+  });
 });
