@@ -1,6 +1,3 @@
-* {
-  text-align: center;
-}
 body,
 html {
   width: 100%;
@@ -9,17 +6,23 @@ html {
 }
 header {
   position: relative;
-  background-color: hsl(175 40% 25%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 4px 4px 1.5px hsl(170 95% 7.5%);
+  font-size: 42px;
+  font-weight: 1000;
+  color: hsl(170 85% 25%);
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  background-color: hsl(175 40% 15%);
   width: 100%;
   height: 60px;
-  border: 2px solid purple;
 }
 main {
   position: relative;
-  background-color: hsl(175 30% 20%);
+  background-color: hsl(175 30% 10%);
   width: 100%;
   height: calc(100% - 50px);
-  border: 2px solid red;
 }
 #control-panel-container {
   display: flex;
@@ -28,15 +31,24 @@ main {
 }
 #pads-list {
   position: relative;
-  width: 260px;
+  width: 30%;
   height: 50px;
-  border: 2px solid blue;
+  background-color: hsl(175 40% 12.5%);
 }
 #mixer-panel {
   position: relative;
-  width: calc(100% - 260px);
+  display: flex;
+  align-items: center;
+  width: 70%;
   height: 50px;
-  border: 2px solid yellow;
+  background-color: hsl(175 40% 12.5%);
+}
+#volume-set-up-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  border: 3px solid hsl(170 85% 15%)
 }
 #main-controller-container {
   display: flex;
@@ -45,25 +57,43 @@ main {
   position: relative;
   width: 100%;
   height: calc(100% - 60px);
-  border: 2px solid pink;
 }
 #launch-pads-container {
   display: grid;
   width: 90%;
   height: 90%;
-  border: 2px solid green;
-  padding-block: 20px;
-  padding-inline: 100px;
-  grid-template-columns: repeat(4, 1fr); /* 3 колонки */
-  grid-template-rows: repeat(3, 1fr);    /* 4 ряда */
-  column-gap: 100px;
-  row-gap: 60px;
+  grid-template-columns: repeat(4, 4fr);
+  place-items: center;
 }
-
 #launch-pads-container button {
-  width: 100%;
-  height: 100%;
-  font-size: clamp(12px, 2vw, 24px); /* размер шрифта адаптивный */
-  border-radius: 10px;
-  border: 2px solid black;
+  width: 65%;
+  height: 85%;
+  outline: none;
+  font-size: clamp(12px, 2vw, 28px);
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 600;
+  border-radius: 20px;
+  background-color: hsl(175 30% 10%);
+  border: 5px solid hsl(175 60% 35%);
+  color: hsl(175 60% 35%);
+}
+@media (max-width: 1024px) {
+  #launch-pads-container {
+    column-gap: 10px;
+    row-gap: 5px;
+  }
+  #launch-pads-container button {
+    width: 120px;
+    height: 80px;
+  }
+}
+@media (max-width: 600px) {
+  #launch-pads-container {
+    column-gap: 10px;
+    row-gap: 5px;
+  }
+  #launch-pads-container button {
+    width: 60px;
+    height: 40px;
+  }
 }
