@@ -4,16 +4,16 @@ const launchPadElements = document.querySelectorAll('button');
 launchPadElements.forEach((launchPad, padIndex) => {
   const warmPadPitchesArray = [
     'C-WarmChurchfrontPads',
-    'C#-WarmChurchfrontPads',
+    'Csharp-WarmChurchfrontPads',
     'D-WarmChurchfrontPads',
-    'D#-WarmChurchfrontPads',
+    'Dsharp-WarmChurchfrontPads',
     'E-WarmChurchfrontPads',
     'F-WarmChurchfrontPads',
-    'F#-WarmChurchfrontPads',
+    'Fsharp-WarmChurchfrontPads',
     'G-WarmChurchfrontPads',
-    'G#-WarmChurchfrontPads',
+    'Gsharp-WarmChurchfrontPads',
     'A-WarmChurchfrontPads',
-    'A#-WarmChurchfrontPads',
+    'Asharp-WarmChurchfrontPads',
     'B-WarmChurchfrontPads'
   ];
   function fadeOut(audio, duration = 500) {
@@ -58,6 +58,7 @@ const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   volumeValueElement.innerHTML = volumeSetUpElement.value;
 });
+
 
 
 
