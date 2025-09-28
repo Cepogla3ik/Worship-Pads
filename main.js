@@ -1,7 +1,6 @@
 const launchPadsContainerElement = document.querySelector('#launch-pads-container');
 const launchPadElements = document.querySelectorAll('button');
 
-// update ?
 launchPadElements.forEach((launchPad, padIndex) => {
   const warmPadPitchesArray = [
     'C-WarmChurchfrontPads',
@@ -17,6 +16,7 @@ launchPadElements.forEach((launchPad, padIndex) => {
     'Asharp-WarmChurchfrontPads',
     'B-WarmChurchfrontPads'
   ];
+
   function fadeOut(audio, duration = 500) {
     const step = 50;
     const volumeStep = audio.volume / (duration / step);
@@ -37,12 +37,32 @@ launchPadElements.forEach((launchPad, padIndex) => {
   let pad;
 
   launchPad.onclick = () => {
-    if (!isPlaying) {
+    if (!isPlaying && !warmPadPitchesArray[padIndex].includes('sharp')) {
       pad = new Audio(`${warmPadPitchesArray[padIndex]}.mp3`);
       launchPad.classList.add('launch-pad-playing');
       launchPad.classList.add('slime-pressing');
       pad.currentTime = 0;
       pad.play();
+      isPlaying = true;
+    } else if (!isPlaying && warmPadPitchesArray[padIndex].includes('sharp')) {
+      const audioCtx = new AudioContext();
+      const url = `${warmPadPitchesArray[padIndex].replace('sharp', '')}.mp3`;
+
+      fetch(url)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+        .then(audioBuffer => {
+          const source = audioCtx.createBufferSource();
+          source.buffer = audioBuffer;
+          source.detune.value = 100;
+          source.connect(audioCtx.destination);
+          source.start();
+
+          pad = source;
+        });
+
+      launchPad.classList.add('launch-pad-playing');
+      launchPad.classList.add('slime-pressing');
       isPlaying = true;
     } else {
       launchPad.classList.remove('launch-pad-playing');
@@ -59,10 +79,3 @@ const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   volumeValueElement.innerHTML = volumeSetUpElement.value;
 });
-
-
-
-
-
-
-
