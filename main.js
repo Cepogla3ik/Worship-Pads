@@ -1,6 +1,7 @@
 const launchPadsContainerElement = document.querySelector('#launch-pads-container');
 const launchPadElements = document.querySelectorAll('button');
 
+// update ?????
 launchPadElements.forEach((launchPad, padIndex) => {
   const warmPadPitchesArray = [
     'C-WarmChurchfrontPads',
@@ -58,6 +59,7 @@ const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   volumeValueElement.innerHTML = volumeSetUpElement.value;
 });
+
 
 
 
