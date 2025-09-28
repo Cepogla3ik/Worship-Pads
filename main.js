@@ -37,7 +37,7 @@ launchPadElements.forEach((launchPad, padIndex) => {
 
   launchPad.onclick = () => {
     if (!isPlaying) {
-      pad = new Audio(`Pads/Warm/${encodeURIComponent(warmPadPitchesArray[padIndex])}.wav`);
+      pad = new Audio(`${encodeURIComponent(warmPadPitchesArray[padIndex])}.mp3`);
       launchPad.classList.add('launch-pad-playing');
       launchPad.classList.add('slime-pressing');
       pad.currentTime = 0;
@@ -58,3 +58,4 @@ const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   volumeValueElement.innerHTML = volumeSetUpElement.value;
 });
+
