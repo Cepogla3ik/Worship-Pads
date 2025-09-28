@@ -12,7 +12,7 @@ header {
   text-shadow: 4px 4px 1.5px hsl(170 95% 7.5%);
   font-size: 42px;
   font-weight: 1000;
-  color: hsl(170 85% 25%);
+  color: hsl(185 90% 30%);
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   background-color: hsl(175 40% 15%);
   width: 100%;
@@ -33,7 +33,9 @@ main {
   position: relative;
   width: 30%;
   height: 50px;
-  background-color: hsl(175 40% 12.5%);
+  background-color: hsl(175 30% 10%);
+  border-right: 2px solid hsl(175 50% 15%);
+  border-bottom: 3px solid hsl(175 50% 15%);
 }
 #mixer-panel {
   position: relative;
@@ -41,14 +43,35 @@ main {
   align-items: center;
   width: 70%;
   height: 50px;
-  background-color: hsl(175 40% 12.5%);
+  background-color: hsl(175 30% 10%);
+  border-left: 2px solid hsl(175 50% 15%);
+  border-bottom: 3px solid hsl(175 50% 15%);
 }
 #volume-set-up-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 16px;
-  border: 3px solid hsl(170 85% 15%)
+  position: relative;
+  margin-inline: 10px;
+  height: 45px;
+  width: 180px;
+  border-radius: 28px;
+  border: 3px solid hsl(170 75% 35%);
+  background-color: hsl(170 40% 25%);
+}
+#volume-set-up {
+  position: relative;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  outline: none;
+}
+#volume-value {
+  position: absolute;
+  left: 50%;
+  top: 22.5%;
+  transform: translate(-50%, -50%);
+  font-weight: 800;
+  font-size: 18px;
+  color: hsl(180 45% 50%);
 }
 #main-controller-container {
   display: flex;
