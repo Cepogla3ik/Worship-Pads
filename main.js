@@ -15,7 +15,7 @@ const warmPadPitchesArray = [
   'B-WarmChurchfrontPads'
 ];
 
-const ctx = new (window.AudioContext || window.webkitAudioContext)();
+const ctx = new(window.AudioContext || window.webkitAudioContext)();
 
 const padsState = Array.from(launchPadElements).map(() => ({
   source: null,
@@ -23,22 +23,36 @@ const padsState = Array.from(launchPadElements).map(() => ({
   isPlaying: false
 }));
 
+const audioBuffers = [];
+
+launchPadElements.forEach(btn => btn.disabled = true);
+
+async function preloadPads() {
+  for (let padName of warmPadPitchesArray) {
+    const response = await fetch(`${padName.replace('sharp','')}.mp3`);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    audioBuffers.push(audioBuffer);
+  }
+
+  console.log("✅ All pads have been loaded!");
+  launchPadElements.forEach(btn => btn.disabled = false);
+}
+
+
 async function playPad(padIndex) {
   const padState = padsState[padIndex];
   if (padState.isPlaying) return;
 
-  const padName = warmPadPitchesArray[padIndex].replace('sharp', '');
-  const response = await fetch(`${padName}.mp3`);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  const audioBuffer = audioBuffers[padIndex];
 
   const source = ctx.createBufferSource();
   source.buffer = audioBuffer;
   source.loop = true;
 
   const gainNode = ctx.createGain();
-  const targetVolume = Number(volumeValueElement.innerText); // берем значение с ползунка
-  gainNode.gain.setValueAtTime(0, ctx.currentTime);          // старт с 0 для fade in
+  const targetVolume = Number(volumeValueElement.innerText);
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
   source.connect(gainNode).connect(ctx.destination);
 
   if (warmPadPitchesArray[padIndex].includes('sharp')) {
@@ -46,7 +60,7 @@ async function playPad(padIndex) {
   }
 
   source.start(0);
-  gainNode.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + 2); // fade in до текущей громкости
+  gainNode.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + 2);
 
   padState.source = source;
   padState.gainNode = gainNode;
@@ -89,8 +103,11 @@ const volumeSetUpElement = document.querySelector('#volume-set-up');
 const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   const vol = parseFloat(volumeSetUpElement.value);
-  volumeValueElement.innerText = vol;
+  volumeValueElement.innerText = vol.toFixed(2);
+
   padsState.forEach(pad => {
     if (pad.gainNode) pad.gainNode.gain.setValueAtTime(vol, ctx.currentTime);
   });
 });
+
+preloadPads();
