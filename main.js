@@ -1,4 +1,13 @@
-const launchPadElements = document.querySelectorAll('button');
+const loadingScreenElement = document.querySelector('#loading-screen');
+const padsLoadingElement = document.querySelector('#pads-loading');
+const skipLoadingScreenElement = document.querySelector('#skip-loading-screen');
+const launchPadElements = document.querySelectorAll('#launch-pads-container button');
+
+skipLoadingScreenElement.onclick = () => {
+  padsLoadingElement.style.display = 'none';
+  loadingScreenElement.style.display = 'none';
+  skipLoadingScreenElement.style.display = 'none';
+}
 
 const warmPadPitchesArray = [
   'C-WarmChurchfrontPads',
@@ -34,6 +43,10 @@ async function preloadPads() {
     const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
     audioBuffers.push(audioBuffer);
   }
+
+  padsLoadingElement.style.display = 'none';
+  loadingScreenElement.style.display = 'none';
+  skipLoadingScreenElement.style.display = 'none';
 
   console.log("✅ All pads have been loaded!");
   launchPadElements.forEach(btn => btn.disabled = false);
