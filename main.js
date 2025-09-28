@@ -37,7 +37,8 @@ async function playPad(padIndex) {
   source.loop = true;
 
   const gainNode = ctx.createGain();
-  gainNode.gain.setValueAtTime(Number(volumeValueElement.innerText), ctx.currentTime);
+  const targetVolume = Number(volumeValueElement.innerText); // берем значение с ползунка
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);          // старт с 0 для fade in
   source.connect(gainNode).connect(ctx.destination);
 
   if (warmPadPitchesArray[padIndex].includes('sharp')) {
@@ -45,7 +46,7 @@ async function playPad(padIndex) {
   }
 
   source.start(0);
-  gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 2);
+  gainNode.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + 2); // fade in до текущей громкости
 
   padState.source = source;
   padState.gainNode = gainNode;
@@ -88,7 +89,7 @@ const volumeSetUpElement = document.querySelector('#volume-set-up');
 const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   const vol = parseFloat(volumeSetUpElement.value);
-  volumeValueElement.innerHTML = vol;
+  volumeValueElement.innerText = vol;
   padsState.forEach(pad => {
     if (pad.gainNode) pad.gainNode.gain.setValueAtTime(vol, ctx.currentTime);
   });
