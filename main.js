@@ -1,7 +1,7 @@
 const launchPadsContainerElement = document.querySelector('#launch-pads-container');
 const launchPadElements = document.querySelectorAll('button');
 
-// update ?????
+// update ?
 launchPadElements.forEach((launchPad, padIndex) => {
   const warmPadPitchesArray = [
     'C-WarmChurchfrontPads',
@@ -38,7 +38,7 @@ launchPadElements.forEach((launchPad, padIndex) => {
 
   launchPad.onclick = () => {
     if (!isPlaying) {
-      pad = new Audio(`Worship-Pads/${warmPadPitchesArray[padIndex]}.mp3`);
+      pad = new Audio(`${warmPadPitchesArray[padIndex]}.mp3`);
       launchPad.classList.add('launch-pad-playing');
       launchPad.classList.add('slime-pressing');
       pad.currentTime = 0;
@@ -59,6 +59,7 @@ const volumeValueElement = document.querySelector('#volume-value');
 volumeSetUpElement.addEventListener('input', () => {
   volumeValueElement.innerHTML = volumeSetUpElement.value;
 });
+
 
 
 
