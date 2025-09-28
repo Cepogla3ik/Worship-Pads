@@ -37,7 +37,7 @@ async function playPad(padIndex) {
   source.loop = true;
 
   const gainNode = ctx.createGain();
-  gainNode.gain.setValueAtTime(0, ctx.currentTime);
+  gainNode.gain.setValueAtTime(Number(volumeValueElement.innerText), ctx.currentTime);
   source.connect(gainNode).connect(ctx.destination);
 
   if (warmPadPitchesArray[padIndex].includes('sharp')) {
@@ -68,7 +68,7 @@ function stopPad(padIndex) {
       padState.gainNode = null;
       padState.isPlaying = false;
     }
-  }, 500);
+  }, 2500);
 }
 
 launchPadElements.forEach((launchPad, padIndex) => {
