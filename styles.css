@@ -32,17 +32,45 @@ main {
 #pads-list {
   position: relative;
   width: 30%;
-  height: 50px;
+  height: 100%;
   background-color: hsl(175 30% 10%);
   border-right: 2px solid hsl(175 50% 15%);
   border-bottom: 3px solid hsl(175 50% 15%);
+}
+#pads-list > button {
+  width: 90%;
+  height: 50%;
+  border-radius: 12px;
+  background-color: hsl(210 5% 35%);
+  border: 3px solid hsl(255 5% 25%);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: clamp(4px, 14px, 18px);
+  font-weight: 500;
+  user-select: none;
+}
+#pads-list > button:active {
+  background-color: hsl(210 5% 30%);
+}
+#pads-list-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 100px;
+  border-radius: 10px;
+  pointer-events: none;
+  display: none;
 }
 #mixer-panel {
   position: relative;
   display: flex;
   align-items: center;
   width: 70%;
-  height: 50px;
+  height: 100%;
   background-color: hsl(175 30% 10%);
   border-left: 2px solid hsl(175 50% 15%);
   border-bottom: 3px solid hsl(175 50% 15%);
@@ -50,19 +78,39 @@ main {
 #volume-set-up-container {
   position: relative;
   margin-inline: 10px;
-  height: 45px;
+  height: 90%;
   width: 180px;
   border-radius: 28px;
   border: 3px solid hsl(170 75% 35%);
   background-color: hsl(170 40% 25%);
 }
 #volume-set-up {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
   position: relative;
   left: 50%;
   top: 60%;
   transform: translate(-50%, -50%);
   width: 160px;
   outline: none;
+}
+#volume-set-up::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, hsl(190 75% 50%), hsl(160 50% 50%));
+  transform: translate(0%, -50%);
+  border-radius: 30px;
+  border: 1px solid hsl(180 10% 50%);
+  height: 10px;
+}
+#volume-set-up::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background-color: hsl(190 50% 50%);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -5px;
 }
 #volume-value {
   position: absolute;
@@ -100,26 +148,6 @@ main {
   border: 5px solid hsl(175 60% 35%);
   color: hsl(175 60% 35%);
 }
-@media (max-width: 1024px) {
-  #launch-pads-container {
-    column-gap: 10px;
-    row-gap: 5px;
-  }
-  #launch-pads-container button {
-    width: 120px;
-    height: 80px;
-  }
-}
-@media (max-width: 600px) {
-  #launch-pads-container {
-    column-gap: 10px;
-    row-gap: 5px;
-  }
-  #launch-pads-container button {
-    width: 60px;
-    height: 40px;
-  }
-}
 #loading-screen {
   position: absolute;
   left: 0;
@@ -131,7 +159,7 @@ main {
 #skip-loading-screen {
   position: absolute;
   left: 50%;
-  top: calc(50% + 80px);
+  top: calc(53% + 80px);
   transform: translate(-50%, -50%);
   background-color: hsl(0 0% 20%);
   border: 2.5px solid hsl(0 0% 10%);
@@ -175,9 +203,73 @@ main {
   text-align: left;
   animation: dots 1.25s steps(3,end) infinite;
 }
+#audio-loading-progress-bar {
+  position: absolute;
+  left: 50%;
+  top: calc(46.5% + 80px);
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 15px;
+  border-radius: 20px;
+  background: transparent;
+  border: 2px solid black;
+  overflow: hidden;
+}
 @keyframes dots {
   0%, 20% { content: ""; }
   40% { content: "."; }
   60% { content: ".."; }
   80%, 100% { content: "..."; }
 }
+
+@media (max-width: 1024px) {
+  #launch-pads-container {
+    column-gap: 10px;
+    row-gap: 5px;
+  }
+  #launch-pads-container button {
+    width: 120px;
+    height: 80px;
+  }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  header {
+    height: 85px;
+  }
+  #control-panel-container {
+    height: 65px;
+  }
+  main {
+    height: calc(100% - 80px);
+  }
+  #launch-pads-container button {
+  width: 100%;
+  height: 70%;
+  border-width: 3px;
+  }
+  #launch-pads-container {
+    width: 100%;
+    height: 80%;
+  }
+}
+@media (max-height: 400px) and (orientation: landscape) {
+  header {
+    height: 45px;
+  }
+  #control-panel-container {
+    height: 40px;
+  }
+  main {
+    height: calc(100% - 45px);
+  }
+  #launch-pads-container button {
+  width: 85%;
+  height: 120%;
+  border-width: 3px;
+  }
+  #launch-pads-container {
+    width: 80%;
+    height: 95%;
+    row-gap: 20px;
+  }
+  }
