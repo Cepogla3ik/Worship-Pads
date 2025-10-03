@@ -16,7 +16,12 @@
   </header>
   <main>
     <div id="control-panel-container">
-      <div id="pads-list">PadsList</div>
+      <div id="pads-list">
+        <button>Warm Pads</button>
+        <div id="pads-list-container">
+          <button></button>
+        </div>
+      </div>
       <div id="mixer-panel">
         <div id="volume-set-up-container">
           <label for="volume-set-up" id="volume-value">0.50</label>
@@ -44,6 +49,9 @@
   <div id="loading-screen"></div>
   <div id="pads-loading">
     <span class="loading">Loading<span class="dots"></span></span>
+  </div>
+  <div id="audio-loading-progress-bar">
+    <div style="background: linear-gradient(90deg, hsl(240 75% 50%), hsl(270 75% 50%)); width: 0; height: 100%; transition: width 0.2s;"></div>
   </div>
   <button id="skip-loading-screen">Skip</button>
 </body>
