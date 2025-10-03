@@ -7,6 +7,9 @@ skipLoadingScreenElement.onclick = () => {
   padsLoadingElement.style.display = 'none';
   loadingScreenElement.style.display = 'none';
   skipLoadingScreenElement.style.display = 'none';
+  progressBarContainer.style.display = 'none';
+  
+  launchPadElements.forEach(btn => btn.disabled = false);
 }
 
 const warmPadPitchesArray = [
@@ -32,32 +35,29 @@ const padsState = Array.from(launchPadElements).map(() => ({
   isPlaying: false
 }));
 
-const audioBuffers = [];
-
 launchPadElements.forEach(btn => btn.disabled = true);
 
-async function preloadPads() {
-  for (let padName of warmPadPitchesArray) {
-    const response = await fetch(`${padName.replace('sharp','')}.mp3`);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
-    audioBuffers.push(audioBuffer);
-  }
+const progressBar = document.querySelector('#audio-loading-progress-bar').querySelector('div');
+const progressBarContainer = document.querySelector('#audio-loading-progress-bar');
+const audioBuffers = new Array(warmPadPitchesArray.length).fill(null);
 
-  padsLoadingElement.style.display = 'none';
-  loadingScreenElement.style.display = 'none';
-  skipLoadingScreenElement.style.display = 'none';
+async function loadPad(padIndex) {
+  if (audioBuffers[padIndex]) return audioBuffers[padIndex]; // уже загружен
 
-  console.log("✅ All pads have been loaded!");
-  launchPadElements.forEach(btn => btn.disabled = false);
+  const padName = warmPadPitchesArray[padIndex];
+  const response = await fetch(`${padName.replace('sharp','')}.mp3`);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  audioBuffers[padIndex] = audioBuffer;
+
+  return audioBuffer;
 }
-
 
 async function playPad(padIndex) {
   const padState = padsState[padIndex];
   if (padState.isPlaying) return;
 
-  const audioBuffer = audioBuffers[padIndex];
+  const audioBuffer = await loadPad(padIndex); // если ещё не загружен — грузим
 
   const source = ctx.createBufferSource();
   source.buffer = audioBuffer;
@@ -79,6 +79,34 @@ async function playPad(padIndex) {
   padState.gainNode = gainNode;
   padState.isPlaying = true;
 }
+
+// кнопки активные сразу
+launchPadElements.forEach(btn => btn.disabled = false);
+
+// Фоновая загрузка всех пэдов параллельно
+async function preloadPads() {
+  const promises = warmPadPitchesArray.map(async (padName, i) => {
+    const response = await fetch(`${padName.replace('sharp','')}.mp3`);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    audioBuffers[i] = audioBuffer;
+
+    // прогрессбар
+    const loadedCount = audioBuffers.filter(Boolean).length;
+    const percent = (loadedCount / warmPadPitchesArray.length) * 100;
+    progressBar.style.width = percent + "%";
+  });
+
+  await Promise.all(promises);
+
+  padsLoadingElement.style.display = 'none';
+  loadingScreenElement.style.display = 'none';
+  skipLoadingScreenElement.style.display = 'none';
+  progressBarContainer.style.display = 'none';
+
+  console.log("✅ Все пэды загружены!");
+}
+
 
 function stopPad(padIndex) {
   const padState = padsState[padIndex];
@@ -124,3 +152,6 @@ volumeSetUpElement.addEventListener('input', () => {
 });
 
 preloadPads();
+
+console.log('innerWidth', window.innerWidth);
+console.log('innerHeight', window.innerHeight);
